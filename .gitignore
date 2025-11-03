@@ -11,6 +11,7 @@ pkg/
 *.log
 *.tmp
 *.old
+*.db
 
 .env
 servers.json
