@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Language" content="ru, en">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link type="image/png" sizes="32x32" rel="icon" href="./assets/icon32.png">
+	<title>ProxyHub</title>
+	<style>
+		:root {
+			--bg: #131313;
+			--bg1: #070707;
+			--text: #ddd;
+			--accent: deepskyblue;
+			--border: #444;
+			--red: #dd4a4a;
+			--green: #4be071;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+			background: var(--bg);
+			color: var(--text);
+			line-height: 1.6;
+			text-align: justify;
+			overflow-wrap: anywhere;
+			word-break: normal;
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
+
+		a {
+			color: var(--accent);
+			text-decoration: none;
+		}
+
+		hr {
+			margin: 6px 0;
+			border: none;
+			border-top: 1px solid var(--border);
+		}
+
+		main img,
+		main video {
+			border-radius: 12px;
+			max-width: 100%;
+			height: auto;
+		}
+
+		.image-con,
+		main .video-con {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 14px;
+			width: 100%;
+			padding: 8px 0;
+		}
+
+		header {
+			background-color: var(--bg1);
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px 20px;
+			border-bottom: 1px solid var(--border);
+			position: relative;
+		}
+
+		.logo {
+			cursor: pointer;
+			user-select: none;
+			display: flex;
+			align-items: center;
+			gap: 9px;
+		}
+
+		.logo img {
+			width: 36px;
+			height: 36px;
+		}
+
+		nav ul {
+			list-style: none;
+			display: flex;
+			gap: 20px;
+		}
+
+		nav a {
+			color: var(--text);
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		nav a.active,
+		nav a:hover {
+			color: var(--accent);
+		}
+
+		.menu-toggle {
+			display: none;
+			font-size: 29px;
+			background: none;
+			color: var(--text);
+			border: none;
+			cursor: pointer;
+		}
+
+		main {
+			flex: 1;
+			padding: 20px;
+		}
+
+		main h1,
+		main h2,
+		main h3,
+		main h4 {
+			margin: 16px 0;
+		}
+
+		main p,
+		main ul {
+			margin: 16px 0;
+		}
+
+		main li {
+			margin-left: 32px;
+		}
+
+		main code pre {
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			padding: 11px;
+			white-space: pre-wrap;
+			word-break: break-all;
+			overflow-wrap: anywhere;
+			line-height: 21px;
+			font-family: monospace;
+			font-size: 14px;
+		}
+
+		section {
+			display: none;
+		}
+
+		section.active {
+			display: block;
+			max-width: 912px;
+			margin: auto;
+		}
+
+		footer {
+			text-align: center;
+			padding: 10px;
+			border-top: 1px solid var(--border);
+			font-size: 14px;
+			color: #aaa;
+		}
+
+		.nextBtn {
+			display: block;
+			padding: 3px 8px;
+			font-weight: 600;
+			font-size: 16px;
+			margin: 24px auto 0;
+			user-select: none;
+		}
+
+		@media (max-width:768px) {
+			.menu-toggle {
+				display: block;
+				margin-left: auto;
+			}
+
+			nav ul {
+				position: absolute;
+				top: 100%;
+				right: 0;
+				background: #1b1b1b;
+				flex-direction: column;
+				gap: 10px;
+				padding: 15px;
+				border-left: 1px solid var(--border);
+				border-bottom: 1px solid var(--border);
+				display: none;
+			}
+
+			nav ul.open {
+				display: flex;
+			}
+		}
+
+		.red {
+			color: var(--red);
+		}
+
+		.green {
+			color: var(--green);
+		}
+
+		.border1 {
+			border: 1px solid var(--border);
+		}
+
+		.shad {
+			box-shadow: 5px 5px 12px -2px rgba(0, 0, 0, 0.8);
+		}
+
+		.flex-jc-sb {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.y-glow-img,
+		.b-glow-img {
+			display: inline-block;
+			transition: filter 0.3s ease, transform 0.3s ease;
+		}
+
+		.y-glow-img {
+			filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.5));
+		}
+
+		.y-glow-img:hover {
+			filter: drop-shadow(0 0 12px rgba(255, 200, 100, 0.6));
+			transform: scale(1.02);
+		}
+
+		.b-glow-img {
+			filter: drop-shadow(0 0 10px rgba(140, 247, 255, 0.5));
+		}
+
+		.b-glow-img:hover {
+			filter: drop-shadow(0 0 12px rgba(140, 247, 255, 0.6));
+			transform: scale(1.02);
+		}
+
+		td,
+		th {
+			border: 1px solid var(--border);
+			padding: 4px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<header>
+		<div class="logo" onclick="document.getElementById('get_main').click()">
+			<img src="./assets/icon96.png" alt="logo">
+			<h2>ProxyHub</h2>
+		</div>
+
+		<button class="menu-toggle">☰</button>
+
+		<nav>
+			<ul id="menu">
+				<li><a id="get_main" href="#" data-section="main" class="active">Main</a></li>
+				<li><a id="get_docs" href="#" data-section="docs">Docs</a></li>
+				<li><a id="get_servers" href="#" data-section="servers">Servers</a></li>
+				<li><a id="get_links" href="#" data-section="links">Links</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<section id="main" class="active">
+		</section>
+		<section id="docs">
+		</section>
+		<section id="servers">
+		</section>
+		<section id="links">
+		</section>
+	</main>
+
+	<footer>© 2025 ProxyHub.</footer>
+
+	<script>
+		const links = document.querySelectorAll("nav a");
+		const sections = document.querySelectorAll("main section");
+		const sectionsLoad = {};
+		const toggle = document.querySelector(".menu-toggle");
+		const menu = document.getElementById("menu");
+
+		function buildServersPage(data) {
+			const serversTable = document.getElementById("servers-table");
+
+			data.forEach((s) => {
+				const row = document.createElement("tr");
+				const name = document.createElement("td");
+				name.innerText = s.name;
+
+				const info = document.createElement("td");
+				const infoInner = document.createElement("a");
+				infoInner.href = s.infoLink + "/info";
+				infoInner.target = "_blank";
+				infoInner.innerText = s.id;
+				info.appendChild(infoInner);
+
+				const location = document.createElement("td");
+				location.innerText = s.location;
+
+				const provider = document.createElement("td");
+				const providerInner = document.createElement("a");
+				providerInner.href = s.providerLink;
+				providerInner.target = "_blank";
+				providerInner.innerText = s.providerName;
+				provider.appendChild(providerInner);
+
+				row.appendChild(name);
+				row.appendChild(info);
+				row.appendChild(location);
+				row.appendChild(provider);
+
+				serversTable.appendChild(row);
+			});
+		}
+
+		function drawSection(section, content) {
+			sectionsLoad[section.id] = true;
+			section.innerHTML = content;
+			if (section.id === "servers") {
+				fetch("./servers")
+					.then(res => res.text())
+					.then(data => console.log(
+						buildServersPage(JSON.parse(data))
+					));
+			}
+		}
+
+		links.forEach(link => {
+			link.addEventListener("click", e => {
+				e.preventDefault();
+				links.forEach(l => l.classList.remove("active"));
+				link.classList.add("active");
+				sections.forEach(s => s.classList.remove("active"));
+				const section = document.getElementById(link.dataset.section);
+				if (!sectionsLoad[section.id]) {
+					fetch(`./assets/${link.dataset.section}.html`)
+						.then(res => res.text())
+						.then(content => {
+							drawSection(section, content);
+						});
+				}
+				section.classList.add("active");
+				menu.classList.remove("open");
+			});
+		});
+
+		toggle.addEventListener("click", () => menu.classList.toggle("open"));
+		document.getElementById("get_main").click();
+	</script>
+
+</body>
+
+</html>

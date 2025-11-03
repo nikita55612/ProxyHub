@@ -1,0 +1,16 @@
+/bin/
+/build/
+/dist/
+/release/
+
+go.sum.tmp
+pkg/
+.vscode/
+.DS_Store
+
+*.log
+*.tmp
+*.old
+
+.env
+servers.json
