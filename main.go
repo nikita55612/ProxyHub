@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -47,16 +46,6 @@ type ProxyLinks struct {
 }
 
 func main() {
-	d, _ := os.ReadFile("vnstat")
-
-	var VnStat VnStatData
-
-	json.Unmarshal(d, &VnStat)
-
-	fmt.Printf("%+v", VnStat)
-
-	return
-
 	err := godotenv.Load()
 	if err != nil {
 		envfile, err := os.Create(".env")

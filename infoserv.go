@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
-	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -24,7 +23,7 @@ type InfoServerParams struct {
 
 type VnStatData struct {
 	VnStatVersion string            `json:"vnstatversion"`
-	JsonVersion   int               `json:"jsonversion"`
+	JsonVersion   string            `json:"jsonversion"`
 	Interfaces    []VnStatInterface `json:"interfaces"`
 }
 
@@ -107,9 +106,9 @@ func infoHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func statHandle(w http.ResponseWriter, r *http.Request) {
-	exc := execCommand("vnstat --json d 30")
+	exc := execCommand("vnstat", "--json", "d", "30")
 	if exc == "" {
-		http.Error(w, "error", http.StatusBadRequest)
+		http.Error(w, "exec command error", http.StatusBadRequest)
 		return
 	}
 
@@ -127,17 +126,18 @@ func statHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slices.Reverse(vnStat.Interfaces[0].Traffic.Day)
+	days := vnStat.Interfaces[0].Traffic.Day
 
-	if len(vnStat.Interfaces[0].Traffic.Day) > 0 {
-		result.DayRx = vnStat.Interfaces[0].Traffic.Day[0].Rx
-		result.DayTX = vnStat.Interfaces[0].Traffic.Day[0].Tx
+	if len(days) > 0 {
+		lastDay := days[len(days)-1]
+		result.DayRx = lastDay.Rx
+		result.DayTX = lastDay.Tx
 	}
 
-	for i, day := range vnStat.Interfaces[0].Traffic.Day {
+	for i, day := range days {
 		result.Day30Rx += day.Rx
 		result.Day30TX += day.Tx
-		if i < 7 {
+		if i >= len(days)-7 {
 			result.Day7Rx += day.Rx
 			result.Day7TX += day.Tx
 		}
@@ -168,10 +168,9 @@ func rawStatHandle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	commandPrompt := fmt.Sprintf("vnstat --json %s %s", mode, limit)
-	result := execCommand(commandPrompt)
+	result := execCommand("vnstat", "--json", mode, limit)
 	if result == "" {
-		http.Error(w, "error", http.StatusBadRequest)
+		http.Error(w, "exec command error", http.StatusBadRequest)
 		return
 	}
 
@@ -187,11 +186,8 @@ func RunInfoServer(ctx context.Context, stop context.CancelFunc, params *InfoSer
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/info", infoHandle)
-
 	mux.HandleFunc("/stat", statHandle)
-
 	mux.HandleFunc("/rawstat", rawStatHandle)
-
 	mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "pong")
 	})
@@ -202,7 +198,7 @@ func RunInfoServer(ctx context.Context, stop context.CancelFunc, params *InfoSer
 		Handler: mux,
 	}
 
-	log.Printf("Info server running [LOCAL] at http://%s\n", addr)
+	log.Printf("Info server running [LOCAL] at http://127.0.0.1:%d\n", params.Port)
 	log.Printf("Info server running [GLOBAL] at http://%s:%d\n", ipAddr, params.Port)
 
 	go func() {

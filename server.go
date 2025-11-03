@@ -42,7 +42,6 @@ func RunServer(ctx context.Context, stop context.CancelFunc, params *ServerParam
 	}
 
 	log.Printf("Server running [LOCAL] at http://127.0.0.1:%d%s\n", params.Port, params.Prefix)
-
 	serverFullExternalURL = fmt.Sprintf("http://%s:%d%s", ipAddr, params.Port, params.Prefix)
 	log.Printf("Server running [GLOBAL] at %s\n", serverFullExternalURL)
 
