@@ -98,6 +98,11 @@ func infoHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	header := w.Header()
+	header.Set("Access-Control-Allow-Origin", "*")
+	header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+	header.Set("Access-Control-Allow-Headers", "Content-Type")
+
 	infoCache = ""
 	infoCache += strings.ReplaceAll(strings.ReplaceAll(execCommand("fastfetch", "--pipe", "--structure", "separator:os:separator:host:kernel:uptime:packages:shell:de:wm:wmtheme:theme:icons:font:cpu:gpu:memory:disk:localip"), "[34C", ""), "[31C", "")
 	infoCache += execCommand("vnstat")
@@ -116,6 +121,11 @@ func statHandle(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, statCache)
 		return
 	}
+
+	header := w.Header()
+	header.Set("Access-Control-Allow-Origin", "*")
+	header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+	header.Set("Access-Control-Allow-Headers", "Content-Type")
 
 	exc := execCommand("vnstat", "--json", "d", "30")
 	if exc == "" {
@@ -154,7 +164,6 @@ func statHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	header := w.Header()
 	header.Set("Content-Type", "application/json")
 
 	b, _ := json.Marshal(&result)
@@ -166,6 +175,11 @@ func statHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func rawStatHandle(w http.ResponseWriter, r *http.Request) {
+	header := w.Header()
+	header.Set("Access-Control-Allow-Origin", "*")
+	header.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+	header.Set("Access-Control-Allow-Headers", "Content-Type")
+
 	query := r.URL.Query()
 	mode := query.Get("mode")
 	if mode == "" {
@@ -188,7 +202,6 @@ func rawStatHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	header := w.Header()
 	header.Set("Content-Type", "application/json")
 
 	fmt.Fprint(w, result)

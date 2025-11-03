@@ -193,6 +193,7 @@ function buildServersPage() {
 		status.style = "text-align: center;";
 		fetch(`${s.infoLink}/ping`)
 			.then((res) => {
+				console.log(`${s.infoLink}/ping`, res);
 				if (res.status === 200) {
 					status.innerText = "🟢";
 					res.text()
@@ -205,7 +206,8 @@ function buildServersPage() {
 					status.innerText = "🔴";
 				}
 			})
-			.catch(_ => {
+			.catch(e => {
+				console.log(`${s.infoLink}/ping`, e);
 				status.innerText = "🔴";
 			})
 
