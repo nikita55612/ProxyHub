@@ -12,6 +12,36 @@ function parseProxyUrl(url) {
 	};
 }
 
+async function decrypt(ks, ed) {
+    const kb = new TextEncoder().encode(ks);
+    if (kb.length !== 16) {
+        throw new Error(`Key must be 16 bytes, got ${kb.length}`);
+    }
+    const binaryString = atob(ed);
+    const encrypted = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        encrypted[i] = binaryString.charCodeAt(i);
+    }
+    const nonce = encrypted.slice(0, 12);
+    const ciphertext = encrypted.slice(12);
+    const ck = await crypto.subtle.importKey(
+        'raw',
+        kb,
+        { name: 'AES-GCM' },
+        false,
+        ['decrypt']
+    );
+    const decrypted = await crypto.subtle.decrypt(
+        {
+            name: 'AES-GCM',
+            iv: nonce
+        },
+        ck,
+        ciphertext
+    );
+    return new TextDecoder().decode(decrypted);
+}
+
 function updateServerLoad(value) {
 	const slider = document.getElementById('serverLoadSlider');
 	const counter = document.getElementById('serverLoadSliderCounter');
@@ -185,12 +215,17 @@ function renderSection(sectionEl, html) {
 	loadedSections[sectionEl.id] = true;
 	sectionEl.innerHTML = html;
 	if (sectionEl.id === 'servers') {
-		fetch('./proxyservers').then(r => r.text()).then(t => {
-			try {
-				serverList = JSON.parse(t) || [];
+		fetch('./proxyservers')
+			.then(r => r.text())
+			.then(t => {
+				const k = t.slice(0, 16);
+				const ed = t.slice(16);
+				return decrypt(k, ed);
+			})
+			.then(dd => {
+				serverList = JSON.parse(dd) || [];
 				buildServersTable();
-			} catch (e) { }
-		});
+			});
 	}
 }
 

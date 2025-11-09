@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -44,6 +48,36 @@ type ProxyLinks struct {
 	Vless []string `json:"vless"`
 	HTTP  []string `json:"http"`
 	Socks []string `json:"socks"`
+}
+
+func randomKey() string {
+	const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/+"
+	bytes := make([]byte, 16)
+	rand.Read(bytes)
+	for i := range bytes {
+		bytes[i] = chars[bytes[i]%byte(len(chars))]
+	}
+	return string(bytes)
+}
+
+func encrypt(key []byte, text string) (string, error) {
+	if len(key) != 16 {
+		return "", fmt.Errorf("key must be exactly 16 bytes")
+	}
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
+	ciphertext := gcm.Seal(nonce, nonce, []byte(text), nil)
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
 func serverInfoHandle(w http.ResponseWriter, r *http.Request) {
@@ -91,6 +125,23 @@ func serverInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func proxyServersInfoHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := os.ReadFile("proxyservers.json")
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	ekey := randomKey()
+	encryptData, err := encrypt([]byte(ekey), string(data))
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, ekey+encryptData)
+}
+
 func RunServer(ctx context.Context, stop context.CancelFunc, params *ServerParams) {
 	defer stop()
 
@@ -121,9 +172,7 @@ func RunServer(ctx context.Context, stop context.CancelFunc, params *ServerParam
 
 	mux.HandleFunc(params.Prefix+"/serverinfo/", serverInfoHandle)
 
-	mux.HandleFunc(params.Prefix+"/proxyservers", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "proxyservers.json")
-	})
+	mux.HandleFunc(params.Prefix+"/proxyservers", proxyServersInfoHandle)
 
 	assetsPath := filepath.Join(params.Dir, "assets")
 	fs := http.FileServer(http.Dir(assetsPath))
