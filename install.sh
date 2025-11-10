@@ -80,7 +80,7 @@ EOF
 	echo "Необходимо внести информацию о proxy серверах в файл $PROXY_HUB_INSTALL_DIR/proxyservers.json"
 fi
 
-go build -o proxyhub "$PROXY_HUB_INSTALL_DIR"
+go build -o proxyhub
 
 mkdir -p "$PROXY_HUB_INSTALL_DIR"
 shopt -s dotglob nullglob

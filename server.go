@@ -189,8 +189,8 @@ func RunServer(ctx context.Context, stop context.CancelFunc, params *ServerParam
 		Handler: mux,
 	}
 
-	log.Printf("Server running [LOCAL] at http://127.0.0.1:%d%s\n", params.Port, params.Prefix)
-	serverFullExternalURL = fmt.Sprintf("http://%s:%d%s", PublicIPAddr, params.Port, params.Prefix)
+	log.Printf("Server running [LOCAL] at %s://127.0.0.1:%d%s\n", params.Proto, params.Port, params.Prefix)
+	serverFullExternalURL = fmt.Sprintf("%s://%s:%d%s", params.Proto, PublicIPAddr, params.Port, params.Prefix)
 	log.Printf("Server running [GLOBAL] at %s\n", serverFullExternalURL)
 
 	go func() {
