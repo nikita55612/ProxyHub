@@ -149,6 +149,7 @@ async function showServer(index) {
 	const nextBtn = document.getElementById('nextServerBtn');
 	const nextIndex = (index + 1) % serverList.length;
 	nextBtn.textContent = serverList.length > 0 ? `→ ${serverList[nextIndex].name}` : '';
+	nextBtn.style.padding = '3px';
 	nextBtn.onclick = () => showServer(nextIndex);
 	nextBtn.disabled = serverList.length <= 1;
 	document.getElementById('serverContentName').textContent = serverList[index].name || '';
@@ -235,6 +236,7 @@ function buildServersTable() {
 		const actionTd = document.createElement('td');
 		const btn = document.createElement('button');
 		btn.type = 'button';
+		btn.style.padding = '3px';
 		btn.style.height = '24px';
 		btn.dataset.index = String(idx);
 		btn.textContent = '⤵️';
